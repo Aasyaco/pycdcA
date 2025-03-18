@@ -8,7 +8,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v3
       - name: Configure and Build
         run: |
           mkdir build
@@ -21,7 +21,7 @@ jobs:
           cmake --build build --config Debug --target check
           cmake --build build --config Release --target check
       - name: Upload artifact
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         with:
           name: pycdc-release
           path: build\Release\*.exe
