@@ -1038,9 +1038,21 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
         case Pyc::POP_JUMP_FORWARD_IF_NOT_NONE_A:
         case Pyc::RERAISE:
         case Pyc::RERAISE_A:
+        case Pyc::YIELD_VALUE_A:
+        case Pyc::CHECK_EG_MATCH:
+        case Pyc::PREP_RERAISE_STAR:
+        case Pyc::JUMP_BACKWARD_NO_INTERRUPT_A:
+        case Pyc::POP_JUMP_FORWARD_IF_NONE_A:
+        case Pyc::POP_JUMP_BACKWARD_IF_TRUE_A:
+        case Pyc::LOAD_ASSERTION_ERROR:
+        case Pyc::CALL_INTRINSIC_1_A:
         case Pyc::LIST_TO_TUPLE:
         case Pyc::TO_BOOL:
         case Pyc::END_FOR:
+        case Pyc::CLEANUP_THROW:
+        case Pyc::END_SEND:
+        case Pyc::LOAD_SUPER_ATTR_A:
+        case Pyc::LOAD_FAST_CHECK_A:
         case Pyc::EXTENDED_ARG_A:
         case Pyc::COPY_A:
         case Pyc::MAKE_CELL_A:
@@ -1062,6 +1074,10 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
         case Pyc::JUMP_IF_TRUE_OR_POP_A:
         case Pyc::CALL_FUNCTION_EX_A:
         case Pyc::POP_JUMP_IF_FALSE_A:
+        case Pyc::POP_JUMP_IF_NONE_A:
+        case Pyc::SEND_A:
+        case Pyc::DICT_MERGE_A:
+        case Pyc::LOAD_FAST_AND_CLEAR_A:
         case Pyc::POP_JUMP_IF_TRUE_A:
         case Pyc::POP_JUMP_FORWARD_IF_FALSE_A:
         case Pyc::POP_JUMP_FORWARD_IF_TRUE_A:
@@ -1211,6 +1227,9 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
 
                             PycRef<ASTBlock> tmp = curblock;
                             blocks.pop();
+                            if (blocks.size() == 0) {
+                                break;
+                            }
                             curblock = blocks.top();
                             if (should_add_for_block) {
                                 curblock->append(tmp.cast<ASTNode>());
@@ -1285,7 +1304,9 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
                         prev = nil;
                     } else if (prev->blktype() == ASTBlock::BLK_ELSE) {
                         /* Special case */
-                        prev = blocks.top();
+                        if (blocks.size() != 0) {
+                            prev = blocks.top();
+                        }
                         if (!push) {
                             stack = stack_hist.top();
                             stack_hist.pop();
@@ -1370,7 +1391,9 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
                         prev = nil;
                     } else if (prev->blktype() == ASTBlock::BLK_ELSE) {
                         /* Special case */
-                        prev = blocks.top();
+                        if (blocks.size() != 0) {
+                            prev = blocks.top();
+                        }
                         if (!push) {
                             stack = stack_hist.top();
                             stack_hist.pop();
@@ -1379,6 +1402,10 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
 
                         if (prev->blktype() == ASTBlock::BLK_MAIN) {
                             /* Something went out of control! */
+                            prev = nil;
+                        }
+
+                        if (blocks.size() == 0) {
                             prev = nil;
                         }
                     } else if (prev->blktype() == ASTBlock::BLK_TRY
@@ -1408,7 +1435,11 @@ PycRef<ASTNode> BuildFromCode(PycRef<PycCode> code, PycModule* mod)
 
                 } while (prev != nil);
 
-                curblock = blocks.top();
+                if (blocks.size() == 0) {
+                    curblock->setEnd(pos+offs);
+                } else {
+                    curblock = blocks.top();
+                }
 
                 if (curblock->blktype() == ASTBlock::BLK_EXCEPT) {
                     curblock->setEnd(pos+offs);

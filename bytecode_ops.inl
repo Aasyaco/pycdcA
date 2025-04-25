@@ -130,6 +130,10 @@ OPCODE_A(DELETE_NAME)                   // Python 1.0 ->                names[A]
 OPCODE_A(UNPACK_TUPLE)                  // Python 1.0 - 1.6             A=count
 OPCODE_A(UNPACK_LIST)                   // Python 1.0 - 1.6             A=count
 OPCODE_A(UNPACK_ARG)                    // Python 1.0 - 1.4             A=count
+OPCODE_A(CALL_NO_KW)
+OPCODE_A(CALL_NO_KW_METHOD)
+OPCODE_A(CALL_KW_METHOD)
+
 OPCODE_A(STORE_ATTR)                    // Python 1.0 ->                names[A]
 OPCODE_A(DELETE_ATTR)                   // Python 1.0 ->                names[A]
 OPCODE_A(STORE_GLOBAL)                  // Python 1.0 ->                names[A]
