@@ -293,4 +293,4 @@ OPCODE_A(INSTRUMENTED_END_FOR)              // Python 3.12 ->           (see END
 OPCODE_A(INSTRUMENTED_END_SEND)             // Python 3.12 ->           (see END_SEND)
 OPCODE_A(INSTRUMENTED_INSTRUCTION)          // Python 3.12 ->           A=(unused)
 OPCODE_A(INSTRUMENTED_LINE)                 // Python 3.12 ->           ???
-OPCODE_A(INSTRUMENTED_CALL_KW)              // Python 3.13 ->           (see CALL_KW)
+OPCODE_A(INSTRUMENTED_CALL_KW)
